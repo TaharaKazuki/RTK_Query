@@ -1,1 +1,1 @@
-# React　ReduxToolkit　training
+# React/ReduxToolkit
