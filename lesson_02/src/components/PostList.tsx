@@ -1,5 +1,6 @@
 import { useAppSelector } from '../app/hooks'
 import { selectAllPosts } from '../features/posts/postsSlice'
+import PostAuthor from './PostAuthor'
 
 const PostList = () => {
   const posts = useAppSelector(selectAllPosts)
@@ -8,6 +9,10 @@ const PostList = () => {
     <article key={post.id}>
       <h3>{post.title}</h3>
       <p>{post.content.substring(0, 100)}</p>
+
+      <p className="postCredit">
+        <PostAuthor userId={post.userId} />
+      </p>
     </article>
   ))
 
