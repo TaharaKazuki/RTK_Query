@@ -37,9 +37,11 @@ const AddPostForm = () => {
     event.preventDefault()
     if (title && content) {
       dispatch(postAdded(title, content, userId))
-      setFormData({ ...initialPostData })
+      setFormData({ ...initialPostData, userId: userId })
     }
   }
+
+  const canSave = Boolean(title) && Boolean(content) && Boolean(userId)
 
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>
@@ -60,7 +62,7 @@ const AddPostForm = () => {
         </select>
         <label htmlFor="content">Post Content:</label>
         <textarea name="content" id="content" value={content} onChange={handleChange}></textarea>
-        <button type="button" onClick={onSavePostClicked}>
+        <button type="button" onClick={onSavePostClicked} disabled={!canSave}>
           Save Post
         </button>
       </form>
