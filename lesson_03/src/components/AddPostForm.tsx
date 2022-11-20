@@ -2,7 +2,7 @@ import { ChangeEvent, SyntheticEvent, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { selectAllUsers } from '../features/users/usersSlice'
 
-import { postAdded } from '../features/posts/postsSlice'
+import { fetchStatusType, fetchStatus, postAdded, addNewPost } from '../features/posts/postsSlice'
 
 type FormData = {
   title: string
@@ -22,6 +22,7 @@ const AddPostForm = () => {
   const [{ title, content, userId }, setFormData] = useState<FormData>({
     ...initialPostData,
   })
+  const [addRequestStatus, setAddRequestStatus] = useState<fetchStatusType>(fetchStatus.IDLE)
 
   const users = useAppSelector(selectAllUsers)
 
@@ -32,15 +33,21 @@ const AddPostForm = () => {
     setFormData((state) => ({ ...state, [name]: event.target.value }))
   }
 
+  const canSave = [title, content, userId].every(Boolean) && addRequestStatus === fetchStatus.IDLE
+
   const onSavePostClicked = (event: SyntheticEvent) => {
     event.preventDefault()
-    if (title && content) {
-      dispatch(postAdded(title, content, userId))
-      setFormData({ ...initialPostData, userId: userId })
+    if (canSave) {
+      try {
+        setAddRequestStatus(fetchStatus.LOADING)
+        dispatch(addNewPost({ title, body: content, userId })).unwrap()
+      } catch (err) {
+        console.info('Failed to save the post', err)
+      } finally {
+        setAddRequestStatus(fetchStatus.IDLE)
+      }
     }
   }
-
-  const canSave = Boolean(title) && Boolean(content) && Boolean(userId)
 
   const userOptions = users.map((user) => (
     <option key={user.id} value={user.id}>

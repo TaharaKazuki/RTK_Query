@@ -25,9 +25,11 @@ type ReactionPayload = {
   reaction: keyof typeof initialReactions
 }
 
+export type fetchStatusType = typeof fetchStatus[keyof typeof fetchStatus]
+
 type initialStateType = {
   posts: PostState[]
-  status: typeof fetchStatus[keyof typeof fetchStatus]
+  status: fetchStatusType
   error: string | undefined
 }
 
@@ -63,14 +65,17 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   }
 })
 
-export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPost) => {
-  try {
-    const response = await axios.post(POSTS_URL, initialPost)
-    return [...response.data]
-  } catch (err: any) {
-    return err.message
+export const addNewPost = createAsyncThunk(
+  'posts/addNewPost',
+  async (initialPost: Pick<PostState, 'title' | 'userId' | 'body'>) => {
+    try {
+      const response = await axios.post(POSTS_URL, initialPost)
+      return response.data
+    } catch (err: any) {
+      return err.message
+    }
   }
-})
+)
 
 export const postsSlice = createSlice({
   name: 'posts',
