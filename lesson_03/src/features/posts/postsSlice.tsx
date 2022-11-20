@@ -6,7 +6,7 @@ import axios from 'axios'
 export type PostState = {
   id: string
   title: string
-  content: string
+  body: string
   userId: string
   date: string
   reactions: Reaction
@@ -31,7 +31,7 @@ type initialStateType = {
   error: string | undefined
 }
 
-const POSTS_URL = 'https://jsonplaceholder.typicode.com/pots'
+const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts'
 
 const initialReactions = {
   thumbsUp: 0,
@@ -41,7 +41,7 @@ const initialReactions = {
   coffee: 0,
 }
 
-const fetchStatus = {
+export const fetchStatus = {
   IDLE: 'idle',
   LOADING: 'loading',
   SUCCEEDED: 'succeeded',
@@ -71,12 +71,12 @@ export const postsSlice = createSlice({
       reducer: (state, action: PayloadAction<PostState>) => {
         state.posts.push(action.payload)
       },
-      prepare: (title: string, content: string, userId: string) => {
+      prepare: (title: string, body: string, userId: string) => {
         return {
           payload: {
             id: nanoid(),
             title,
-            content,
+            body,
             userId,
             date: new Date().toISOString(),
             reactions: { ...initialReactions },
@@ -107,7 +107,7 @@ export const postsSlice = createSlice({
           }
           return post
         })
-        state.posts = state.posts.concat(loadedPots)
+        state.posts = [...state.posts, ...loadedPots]
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = 'failed'
@@ -117,6 +117,8 @@ export const postsSlice = createSlice({
 })
 
 export const selectAllPosts = (state: RootState) => state.posts.posts
+export const getPostsStatus = (state: RootState) => state.posts.status
+export const getPostsError = (state: RootState) => state.posts.error
 
 export const { postAdded, reactionAdded } = postsSlice.actions
 
