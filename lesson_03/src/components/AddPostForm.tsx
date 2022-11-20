@@ -29,7 +29,6 @@ const AddPostForm = () => {
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name } = event.target
-    console.info(event.target.value)
     setFormData((state) => ({ ...state, [name]: event.target.value }))
   }
 

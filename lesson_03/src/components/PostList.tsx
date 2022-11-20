@@ -29,7 +29,7 @@ const PostList = () => {
     content = <p>Loading...</p>
   } else if (postsStatus === fetchStatus.SUCCEEDED) {
     const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
-    content = orderedPosts.map((post) => <PostsExcerpt post={post} />)
+    content = orderedPosts.map((post) => <PostsExcerpt key={post.id} post={post} />)
   } else if (postsStatus === fetchStatus.FAILED) {
     content = <p>{error}</p>
   }
