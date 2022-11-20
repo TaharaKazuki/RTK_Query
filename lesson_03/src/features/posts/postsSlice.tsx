@@ -1,5 +1,7 @@
-import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, nanoid, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
+import { sub } from 'date-fns'
+import axios from 'axios'
 
 export type PostState = {
   id: string
@@ -18,17 +20,25 @@ type Reaction = {
   coffee: number
 }
 
+type ReactionPayload = {
+  postId: string
+  reaction: keyof typeof initialReactions
+}
+
+type initialStateType = {
+  posts: PostState[]
+  status: typeof fetchStatus[keyof typeof fetchStatus]
+  error: string | undefined
+}
+
+const POSTS_URL = 'https://jsonplaceholder.typicode.com/pots'
+
 const initialReactions = {
   thumbsUp: 0,
   wow: 0,
   heart: 0,
   rocket: 0,
   coffee: 0,
-}
-
-type ReactionPayload = {
-  postId: string
-  reaction: keyof typeof initialReactions
 }
 
 const fetchStatus = {
@@ -38,17 +48,20 @@ const fetchStatus = {
   FAILED: 'failed',
 } as const
 
-type initialStateType = {
-  posts: PostState[]
-  status: typeof fetchStatus[keyof typeof fetchStatus]
-  error: Error | null
-}
-
 const initialState: initialStateType = {
   posts: [],
   status: 'idle',
-  error: null,
+  error: undefined,
 }
+
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  try {
+    const response = await axios.get(POSTS_URL)
+    return [...response.data]
+  } catch (err: any) {
+    return err.message
+  }
+})
 
 export const postsSlice = createSlice({
   name: 'posts',
@@ -78,6 +91,28 @@ export const postsSlice = createSlice({
         existingPost.reactions[reaction]++
       }
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(fetchPosts.pending, (state, action) => {
+        state.status = 'loading'
+      })
+      .addCase(fetchPosts.fulfilled, (state, action: PayloadAction<PostState[]>) => {
+        state.status = 'succeeded'
+        let min = 1
+        const loadedPots = action.payload.map((post) => {
+          post.date = sub(new Date(), { minutes: min++ }).toISOString()
+          post.reactions = {
+            ...initialReactions,
+          }
+          return post
+        })
+        state.posts = state.posts.concat(loadedPots)
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
   },
 })
 
