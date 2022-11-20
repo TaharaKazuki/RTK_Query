@@ -1,5 +1,4 @@
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
-import { sub } from 'date-fns'
 import { RootState } from '../../app/store'
 
 export type PostState = {
@@ -32,24 +31,24 @@ type ReactionPayload = {
   reaction: keyof typeof initialReactions
 }
 
-const initialState: PostState[] = [
-  {
-    id: nanoid(),
-    title: 'Redux toolkit',
-    content: 'good things',
-    userId: '0',
-    date: sub(new Date(), { minutes: 10 }).toISOString(),
-    reactions: { ...initialReactions },
-  },
-  {
-    id: nanoid(),
-    title: 'Slices',
-    content: 'pizza',
-    userId: '0',
-    date: sub(new Date(), { minutes: 5 }).toISOString(),
-    reactions: { ...initialReactions },
-  },
-]
+const fetchStatus = {
+  IDLE: 'idle',
+  LOADING: 'loading',
+  SUCCEEDED: 'succeeded',
+  FAILED: 'failed',
+} as const
+
+type initialStateType = {
+  posts: PostState[]
+  status: typeof fetchStatus[keyof typeof fetchStatus]
+  error: Error | null
+}
+
+const initialState: initialStateType = {
+  posts: [],
+  status: 'idle',
+  error: null,
+}
 
 export const postsSlice = createSlice({
   name: 'posts',
@@ -57,7 +56,7 @@ export const postsSlice = createSlice({
   reducers: {
     postAdded: {
       reducer: (state, action: PayloadAction<PostState>) => {
-        state.push(action.payload)
+        state.posts.push(action.payload)
       },
       prepare: (title: string, content: string, userId: string) => {
         return {
@@ -74,7 +73,7 @@ export const postsSlice = createSlice({
     },
     reactionAdded: (state, action: PayloadAction<ReactionPayload>) => {
       const { postId, reaction } = action.payload
-      const existingPost = state.find((post) => post.id === postId)
+      const existingPost = state.posts.find((post) => post.id === postId)
       if (existingPost) {
         existingPost.reactions[reaction]++
       }
@@ -82,7 +81,7 @@ export const postsSlice = createSlice({
   },
 })
 
-export const selectAllPosts = (state: RootState) => state.posts
+export const selectAllPosts = (state: RootState) => state.posts.posts
 
 export const { postAdded, reactionAdded } = postsSlice.actions
 
