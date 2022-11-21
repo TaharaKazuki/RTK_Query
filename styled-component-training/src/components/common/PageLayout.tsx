@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
+import Header from './Header'
 
 const Content = styled.main`
   max-width: 800px;
@@ -22,12 +23,11 @@ type Props = {
   children: ReactNode
 }
 
-const PageLayout = ({ children }: Props) => {
+export const PageLayout = ({ children }: Props) => {
   return (
     <>
+      <Header />
       <Content>{children}</Content>
     </>
   )
 }
-
-export default PageLayout

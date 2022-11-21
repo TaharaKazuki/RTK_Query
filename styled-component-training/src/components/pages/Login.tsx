@@ -1,7 +1,8 @@
 import React from 'react'
+import { PageLayout } from 'components/common'
 
 const Login = () => {
-  return <div>Login</div>
+  return <PageLayout>Login</PageLayout>
 }
 
 export default Login
