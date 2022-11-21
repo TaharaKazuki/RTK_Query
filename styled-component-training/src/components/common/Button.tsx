@@ -9,9 +9,13 @@ const Button2 = ({ children }: Props) => {
   return <button>{children}</button>
 }
 
-const Button = styled.button`
+type ButtonProps = {
+  secondary?: boolean
+}
+
+const Button = styled.button<ButtonProps>`
   color: white;
-  background: #f8049c;
+  background: ${({ secondary }) => (secondary ? 'black' : '#f8049c')};
   font-weight: bold;
   padding: 8px;
   border-radius: 4px;
