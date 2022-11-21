@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import { Link as ReactRouteDomLink } from 'react-router-dom'
 
 const HeaderWrapper = styled.header`
   height: 60px;
@@ -24,12 +24,30 @@ const Menu = styled.nav`
   top: initial;
 `
 
-const StyledLink = styled(Link)`
+type LinkStyleProps = {
+  isActive?: boolean
+  to: string
+}
+
+type LinkProps = {
+  children: ReactNode
+} & LinkStyleProps
+
+const Link = ({ isActive, children, to, ...props }: LinkProps) => {
+  return (
+    <ReactRouteDomLink to={to} {...props}>
+      {children}
+    </ReactRouteDomLink>
+  )
+}
+
+const StyledLink = styled(Link)<LinkStyleProps>`
   padding: 4px 8px;
   display: block;
   text-align: center;
   box-sizing: border-box;
   margin: auto 0;
+  font-weight: ${({ isActive }) => (isActive ? 'bold' : 'normal')};
 `
 
 const Header = () => {
@@ -37,7 +55,9 @@ const Header = () => {
     <HeaderWrapper>
       <Menu>
         <StyledLink to="/">Home</StyledLink>
-        <StyledLink to="/login">Login</StyledLink>
+        <StyledLink to="/login" isActive>
+          Login
+        </StyledLink>
       </Menu>
     </HeaderWrapper>
   )

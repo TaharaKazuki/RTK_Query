@@ -43,4 +43,4 @@ const Button = styled.button<ButtonProps>`
   }
 `
 
-export { Button }
+export { Button, Button2 }
