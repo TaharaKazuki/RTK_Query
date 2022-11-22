@@ -1,13 +1,4 @@
-import { ReactNode } from 'react'
 import styled, { css } from 'styled-components'
-
-type Props = {
-  children: ReactNode
-}
-
-const Button2 = ({ children }: Props) => {
-  return <button>{children}</button>
-}
 
 const largeStyle = css`
   padding: 10px;
@@ -26,7 +17,7 @@ type ButtonProps = {
   large?: boolean
 }
 
-const Button = styled.button<ButtonProps>`
+export const Button = styled.button<ButtonProps>`
   color: white;
   background: ${({ secondary }) => (secondary ? 'black' : '#f8049c')};
   ${({ large }) => (large ? largeStyle : normalStyle)}
@@ -42,5 +33,3 @@ const Button = styled.button<ButtonProps>`
     color: #666;
   }
 `
-
-export { Button, Button2 }
