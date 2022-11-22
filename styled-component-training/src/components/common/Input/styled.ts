@@ -9,4 +9,5 @@ export const Input = styled.input`
   margin-bottom: 8px;
   width: 100%;
   box-sizing: border-box;
+  height: 40px;
 `
